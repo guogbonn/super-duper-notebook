@@ -24,11 +24,17 @@
 
   <body onload="main()">
 
-    <div style="display: flex; flex-direction: row; height: 100vh; width: 100vw; background-color: rgb(222, 222, 222);">
+    <div style="display: flex; flex-direction: row; height: 100vh; width: 100vw; background-color: rgb(222, 222, 222); position: relative;">
+        <div style="position: absolute;  top: 2%; left: 50%; transform: translate(-50%, -50%);"> <h3 id="notebook_title"></h3></div>
         <!-- left side bar -->
-        <div style="width: 25%; "></div>
+        <div id ="leftsidebar"style="width: 25%; padding-top: 5%; ">
+            <div class="add_notebook_button" onclick="addNotebook()">+</div>
+            <div id="notebooklist"></div>
+            
+        </div>
         <!--notebook  -->
-        <div id="notebook" style="width: 50%; background-color: white; padding: 4%;"></div>
+        <div id="notebook" style="width: 50%; border-radius: 2px; background-color: white; padding: 4%; margin-top: 4vh; margin-bottom: 4vh; max-height: 90vh; overflow-y: auto;   box-shadow: 0px 2px 8px 0px rgb(50 50 50 / 50%);"></div>
+       
         <!-- right sidebar -->
         <div style="width: 25%;"></div>
 
@@ -36,7 +42,7 @@
 
 
 
-
+    <script src="js/ui.js"></script>
     <script src="js/main.js"></script>
 
   </body>
