@@ -87,8 +87,20 @@ async def load_notebook(data: dict = Body(...)):
     try:
         content = data["content"]
         current_notebook = utility.get_current_notebook()
-        with open(f"{settings.NOTEBOOK_LOCATION}/{current_notebook}/index.html",'w') as outfile:
-            outfile.write(content)
+        prev = None
+        curr = content
+        #daisy chain copies of work, older content will be in html 1,2...
+        for i in range(0,9):
+            num = i 
+            if i == 0: num = ""
+            try:
+                with open(f"{settings.NOTEBOOK_LOCATION}/{current_notebook}/index{num}.html",'r') as outfile:
+                    prev = outfile.read()
+            except:
+                prev = ""
+            with open(f"{settings.NOTEBOOK_LOCATION}/{current_notebook}/index{num}.html",'w') as outfile:
+                outfile.write(curr)
+            curr = prev
         return {}
     except Exception as e:
         print(e)

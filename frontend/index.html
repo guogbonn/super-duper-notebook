@@ -26,6 +26,20 @@
 
     <div style="display: flex; flex-direction: row; height: 100vh; width: 100vw; background-color: rgb(222, 222, 222); position: relative;">
         <div style="position: absolute;  top: 2%; left: 50%; transform: translate(-50%, -50%);"> <h3 id="notebook_title"></h3></div>
+        <div style="position: absolute;  bottom: .25%; left: 50%;transform: translate(-50%, -7%); "> 
+            <div id="toolbar" class="toolbar">
+                <button class="bold" data-command="bold">B</button>
+                <button class="italic" data-command="italic">I</button>
+                <button class="left" data-command="justifyLeft">Left</button>
+                <button class="center" data-command="justifyCenter">Center</button>
+                <button class="right" data-command="justifyRight">Right</button>
+                <button data-command="insertOrderedList">Numbered List</button>
+                <button data-command="insertUnorderedList">Bullet List</button>
+                <button data-command="createLink">Link</button>
+                <button data-command="hiliteColor" data-value="yellow">Yellow</button>
+              </div>
+        </div>
+
         <!-- left side bar -->
         <div id ="leftsidebar"style="width: 25%; padding-top: 5%; ">
             <div class="add_notebook_button" onclick="addNotebook()">+</div>

@@ -3,13 +3,14 @@
     min-height: 50px;
     margin-bottom: 10px;
     border-radius: 5px;
+    white-space: pre-wrap;
 }
 
 .notebook_instance{
  
         border-radius: 12px;
         box-shadow: 0px 2px 8px 0px rgba(50, 50, 50, 0.5);
-        height: 25px;
+        height: auto;
         width: auto;
         padding-top: 10px;
         padding-bottom: 5px;
@@ -40,3 +41,14 @@
     justify-content: center; 
     align-items: center;
 }
+
+img {
+    width: 400px;
+}
+
+.tab {
+    display: inline-block;
+    width: 20px;
+    height: 1px;
+    margin-left: 20px;
+  }
