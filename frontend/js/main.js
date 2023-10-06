@@ -1,5 +1,6 @@
 nbG = null;
 sever = "http://127.0.0.1:8000/"
+tempName = "t-e-m-p-o-r-a-r-y"
 
 event_conditions = {
     "notebookLocation":null
@@ -20,7 +21,7 @@ function postToServer(endpoint, data){
     // Check the response status and content
     if (xhr.status === 200) {
        
-    console.log("endpoint",endpoint, "server response",JSON.parse(xhr.responseText));
+    //console.log("endpoint",endpoint, "server response",JSON.parse(xhr.responseText));
     return JSON.parse(xhr.responseText)
     } else {
     console.error('POST request failed');
@@ -63,14 +64,26 @@ function debounce(func, delay) {
 
 // encrypt files for privacy 
 
-function create_new_notebook(){
+function create_new_notebook(temp=null){
+  // can create a user notebook but can also create a default notebook because we have changed the text of the current notebook and we don't want this generated text to be the new notebook
     console.log();
-    var notebook_name = document.getElementById("notebook_name").value
+    if(temp == true){
+      var notebook_name = tempName
+
+    }else{
+      var notebook_name = document.getElementById("notebook_name").value;
+    }
     postToServer("createnotebook",{notebook_name})
     nbG.innerHTML = ""
     event_conditions.notebookLocation = null;
-    document.getElementById("notebook_title").innerHTML = notebook_name 
-    listNotebooks()
+
+    if(temp == true){
+      document.getElementById("notebook_title").innerHTML = "Create New NoteBook" 
+    }else{
+      document.getElementById("notebook_title").innerHTML = notebook_name 
+      listNotebooks()
+    }
+
 }
 
 
@@ -84,7 +97,9 @@ function loadNotebook(){
         nbG.innerHTML = ui_notebook_naming();
         event_conditions.notebookLocation = true
     }else{
+      //set the title 
         document.getElementById("notebook_title").innerHTML = serverResponse["current_notebook"]
+     // set the content 
         nbG.innerHTML = serverResponse["content"]
     }
     listNotebooks()
@@ -93,12 +108,17 @@ function loadNotebook(){
 // delete notebook 
 
 function selectNotebook(notebook_name){
-    saveNotebook()
+    saveNotebook();
     postToServer("selectnotebook",{notebook_name})
     loadNotebook();
 }
 
 function addNotebook(){
+    // remove reference to current notebook to avoid overwriting 
+    saveNotebook();
+    //create a temporary notebook which host this menu
+    var temp = true
+    create_new_notebook(temp);
     nbG.innerHTML = ui_notebook_naming();
     event_conditions.notebookLocation = true;
 }
@@ -109,8 +129,13 @@ function listNotebooks(){
     var res = ""
     var serverResponse = postToServer("listnotebooks",{})
     for (var i = 0; i < serverResponse["notebooks"].length; i++){
+      // don't display temp
         console.log(serverResponse["notebooks"][i]);
-       res += ui_notebook_line_item(serverResponse["notebooks"][i])
+        if (serverResponse["notebooks"][i] != tempName){
+          // don't list temp name
+          res += ui_notebook_line_item(serverResponse["notebooks"][i])
+
+        }
     }
     document.getElementById("notebooklist").innerHTML = res; 
 }
@@ -139,6 +164,7 @@ function handlePageClick(e){
 
         editableDiv.focus();
         keypressEvent();
+        saveNotebook()
     }
     // merge section 
 
@@ -146,7 +172,7 @@ function handlePageClick(e){
 
     // link section 
    if( event_conditions.notebookLocation == null){
-    saveNotebook()
+    
    }
     
 }
@@ -226,11 +252,28 @@ function pageClickEvent(){
 }
 
 function saveNotebook(){
+    document.getElementById("save_button").style.color = "red";
     if (document.getElementById("notebook_name") == null){
-        postToServer("savenotebook",{"content": nbG.innerHTML});
+      let images = document.getElementsByTagName("img");
+      // make images lazy loaded 
+      for (let i = 0; i < images.length; i++) {
+        images[i].setAttribute("loading", "lazy");
+      }
+      // Grab the notebook name 
+      if( document.getElementById("notebook_title").innerHTML == "Create New NoteBook"){
+        var notebook_name = tempName;
+      }else{
+        var notebook_name = document.getElementById("notebook_title").innerHTML;
+      }
+      // Send Notebook Content with Notebook name. This allows different notebooks to be open at the same time
+        postToServer("savenotebook",{"content": nbG.innerHTML,"notebook_name":notebook_name});
     }else{
         console.log("don't save")
     }
+    setTimeout(() => {
+      document.getElementById("save_button").style.color = "white";
+    }, "1000");
+   
 }
 var userSelection = null;
 function watchHighlighting(){
@@ -283,6 +326,10 @@ function openWebpages(){
 
 function main(){
 nbG = document.getElementById("notebook");
+
+
+
+
 
 loadNotebook();
 listNotebooks();

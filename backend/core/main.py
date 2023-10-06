@@ -6,7 +6,7 @@ import os
 import json
 from random import randint
 import inspect
-
+import multiprocessing
 
 app = FastAPI()
 
@@ -85,23 +85,32 @@ async def active_notebook(data: dict = Body(...)):
 @app.post("/savenotebook")
 async def load_notebook(data: dict = Body(...)):
     try:
+    #     // get current timestamp of what user wants to save 
+    #     // get current notebook user wants to save
+    #     // don't allow user to checkout two notebooks at the same time
+    #    
+        utility.update_settings("current_notebook",data['notebook_name']) # this is to keep the backend in sync with what is going on the front end
+        
         content = data["content"]
         current_notebook = utility.get_current_notebook()
         prev = None
         curr = content
+        print(f"saving Notebook {current_notebook}")
+        process = multiprocessing.Process(target=utility.daisyChainNotebook, args=(settings.NOTEBOOK_LOCATION,current_notebook,curr,prev,))
+        process.start()
         #daisy chain copies of work, older content will be in html 1,2...
-        for i in range(0,9):
-            num = i 
-            if i == 0: num = ""
-            try:
-                with open(f"{settings.NOTEBOOK_LOCATION}/{current_notebook}/index{num}.html",'r') as outfile:
-                    prev = outfile.read()
-            except:
-                prev = ""
-            with open(f"{settings.NOTEBOOK_LOCATION}/{current_notebook}/index{num}.html",'w') as outfile:
-                outfile.write(curr)
-            curr = prev
-        return {}
+        # for i in range(0,9):
+        #     num = i 
+        #     if i == 0: num = ""
+        #     try:
+        #         with open(f"{settings.NOTEBOOK_LOCATION}/{current_notebook}/index{num}.html",'r') as outfile:
+        #             prev = outfile.read()
+        #     except:
+        #         prev = ""
+        #     with open(f"{settings.NOTEBOOK_LOCATION}/{current_notebook}/index{num}.html",'w') as outfile:
+        #         outfile.write(curr)
+        #     curr = prev
+        # return {}
     except Exception as e:
         print(e)
         pass

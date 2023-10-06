@@ -37,6 +37,7 @@ def localbackend():
     backend_server = lambda: subprocess.Popen(cmd, shell=True)
     global backend_server_thread2
     backend_server_thread2 = threading.Thread(target=backend_server)
+    print("starting backend")
     backend_server_thread2.start()
 
 
